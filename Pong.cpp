@@ -22,18 +22,19 @@ public:
     void reset () {
         this->pongX = 0;
         this->pongY = 0;  
-	bool isPongVelX = rand() % 2; 
-	bool isPongVelY = rand() % 2;
+        this->playerX = 0;
+	    bool isPongVelX = rand() % 2; 
+	    bool isPongVelY = rand() % 2;
         if (isPongVelX) {	
-		this->pongVelX = 1;
-	} else {
-		this->pongVelX = -1;
-	}
-	if (isPongVelY) {
-		this->pongVelY = 1;
-	} else {
-		this->pongVelY = -1;
-	}
+            this->pongVelX = 1;
+        } else {
+            this->pongVelX = -1;
+        }
+        if (isPongVelY) {
+            this->pongVelY = 1;
+        } else {
+            this->pongVelY = -1;
+        }
         episodes++; 
         score = 0;
     }
@@ -58,12 +59,12 @@ public:
         if (action == 2 && this->playerX + this->paddleWidth != width - 1) {
             this->playerX += 1;
         }
-	if (action == 0 && this->playerX - this->paddleWidth == -width + 1) {
-	    reward = -1;
-	}
-	if (action == 2 && this->playerX + this->paddleWidth == width - 1) {
-	    reward = -1; 
-	}
+        if (action == 0 && this->playerX - this->paddleWidth == -width + 1) {
+            reward = 0;
+        }
+        if (action == 2 && this->playerX + this->paddleWidth == width - 1) {
+            reward = 0; 
+        }
         // update pong position
         this->pongX += this->pongVelX; 
         this->pongY += this->pongVelY;
@@ -77,11 +78,11 @@ public:
         // hits player paddle
         if (abs(pongX - playerX) <= paddleWidth && pongY == -height + 2 && pongVelY < 0) {
             pongVelY *= -1; 
-            reward = 3;
+            reward = 1;
             score++;
         }
         if (pongY == -height + 1) {
-            reward = -3;
+            reward = -10;
             is_done = true; 
             this->reset(); 
         }

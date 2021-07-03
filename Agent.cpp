@@ -2,7 +2,7 @@
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
-#include "NeuralNet.cpp"
+#include "NeuralNet.hpp"
 using namespace std;
 class ReplayMemory {
 private: 
@@ -49,8 +49,8 @@ public:
 
 class Agent {
 private:
-    NeuralNetwork net = NeuralNetwork(); 
-    NeuralNetwork target_net = NeuralNetwork();
+    NeuralNet net = NeuralNet(); 
+    NeuralNet target_net = NeuralNet();
     ReplayMemory mem = ReplayMemory();
     int frameReachProb;
     int batches;
@@ -60,7 +60,7 @@ public:
     int frames = 0; 
     Agent (vector<int> layout, double lr, int mem_capacity, int frameReachProb, int targetFreqUpdate, int batches) {
         this->mem = ReplayMemory(mem_capacity);
-        this->net = NeuralNetwork(layout, lr);
+        this->net = NeuralNet(layout, lr);
         this->target_net = net;
         this->frameReachProb = frameReachProb;
         this->targetFreqUpdate = targetFreqUpdate; 
@@ -83,17 +83,17 @@ public:
         this->frames++;
         double probability;
         if (frames <= frameReachProb) {
-            probability = (-0.9 / double(frameReachProb)) * frames + 1;
+            probability = (-0.95 / double(frameReachProb)) * frames + 1;
         } else {
-            probability = 0.1; 
+            probability = 0.05; 
         }
         bool isRandom = (rand() % 100) < (probability * 100);
         int action;
-        if (isRandom) {
+        if (isRandom) { 
             action = rand() % 3;
-	    last_prediction = vector<double>({-1, -1, -1});
+	        last_prediction = vector<double>({-1, -1, -1});
         } else {
-	    last_prediction = this->net.predict(input); 
+	        last_prediction = this->net.predict(input); 
             action = argmax(last_prediction);
         }
         return action;
@@ -128,7 +128,7 @@ public:
             }
             vector<double> target = this->net.predict(current_state);
             target[action] = y; 
-            this->net.backprop(current_state, target, true);
+            this->net.backprop(current_state, target);
         }
         if (frames % this->targetFreqUpdate == 0) {
             this->target_net = this->net; 
