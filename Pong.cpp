@@ -78,7 +78,7 @@ public:
         // hits player paddle
         if (abs(pongX - playerX) <= paddleWidth && pongY == -height + 2 && pongVelY < 0) {
             pongVelY *= -1; 
-            reward = 1;
+            reward = 5;
             score++;
         }
         if (pongY == -height + 1) {
