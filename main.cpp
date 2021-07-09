@@ -2,7 +2,6 @@
 #include "Pong.cpp"
 #include <iostream>
 #include <stdio.h>
-#include <windows.h>
 using namespace std;
 
 void gotoxy(int x,int y)    
