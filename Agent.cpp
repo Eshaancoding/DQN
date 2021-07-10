@@ -55,9 +55,18 @@ private:
     int frameReachProb;
     int batches;
     int targetFreqUpdate;
+    bool is_testing = false;
 public:
     vector<double> last_prediction;
     int frames = 0; 
+
+    Agent (vector<int> layout, string filename) {
+        this->net = NeuralNet(layout, -1); // the learning rate doesn't matter 
+        this->net.open_params(filename);
+        this->target_net = this->net;
+        this->is_testing = true;
+    }
+
     Agent (vector<int> layout, double lr, int mem_capacity, int frameReachProb, int targetFreqUpdate, int batches) {
         this->mem = ReplayMemory(mem_capacity);
         this->net = NeuralNet(layout, lr);
@@ -80,25 +89,31 @@ public:
     }    
 
     int action (vector<double> input) {
-        this->frames++;
-        double probability;
-        if (frames <= frameReachProb) {
-            probability = (-0.95 / double(frameReachProb)) * frames + 1;
+        if (!is_testing) {
+            this->frames++;
+            double probability;
+            if (frames <= frameReachProb) {
+                probability = (-0.95 / double(frameReachProb)) * frames + 1;
+            } else {
+                probability = 0.05; 
+            }
+            bool isRandom = (rand() % 100) < (probability * 100);
+            int action;
+            if (isRandom) { 
+                action = rand() % 3;
+                last_prediction = vector<double>({-1, -1, -1});
+            } else {
+                last_prediction = this->net.predict(input); 
+                action = argmax(last_prediction);
+            }
+            return action;
         } else {
-            probability = 0.05; 
+            last_prediction = this->net.predict(input); 
+            return argmax(last_prediction);
         }
-        bool isRandom = (rand() % 100) < (probability * 100);
-        int action;
-        if (isRandom) { 
-            action = rand() % 3;
-	        last_prediction = vector<double>({-1, -1, -1});
-        } else {
-	        last_prediction = this->net.predict(input); 
-            action = argmax(last_prediction);
-        }
-        return action;
     }
     void store_mem (vector<double> current_state, int action, int reward, vector<double> next_state, bool is_done) {
+        if (is_testing) throw invalid_argument("Cannot use this function while testing");
         mem.store(current_state, action, reward, next_state, is_done);
     } 
     double max (vector<double> array) {
@@ -111,6 +126,7 @@ public:
         return max_val;
     }
     void train () {
+        if (is_testing) throw invalid_argument("Cannot use this function while testing");
         // sample minibatch
         for (int i = 0; i < batches; i++) {
             mem.random(); 
@@ -132,6 +148,7 @@ public:
         }
         if (frames % this->targetFreqUpdate == 0) {
             this->target_net = this->net; 
+            this->net.save_params("model.txt"); // yes im using .txt file dont bully me
         }
     }
 };

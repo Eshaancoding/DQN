@@ -101,6 +101,86 @@ NeuralNet :: NeuralNet () {
     
 }
 
+void split_string (string const &str, const char* delim, vector<double> &out) { 
+    char *token = strtok(const_cast<char*>(str.c_str()), delim); 
+    while (token != nullptr) { 
+        out.push_back(stod(std::string(token))); 
+        token = strtok(nullptr, delim); 
+    } 
+} 
+
+void NeuralNet :: save_params (string filename) {
+    ofstream file;
+    file.open(filename);
+    file << this->layout_size - 1 << endl;
+    // iterate over the layers
+    for (int i = 0; i < this->layout_size - 1; i++) {
+        file << this->layers[i].starting_node << endl;
+        file << this->layers[i].ending_node << endl;
+
+        // iterate over the weights
+        for (int weight_iter = 0; weight_iter < this->layers[i].starting_node * this->layers[i].ending_node; weight_iter++) {
+            file << this->layers[i].weights[weight_iter] << " ";
+        }
+        file << endl;
+        // iterate over the bias
+        for (int bias_iter = 0; bias_iter < this->layers[i].ending_node; bias_iter++) {
+            file << this->layers[i].bias[bias_iter] << " ";
+        }
+        file << endl;
+    }
+    file.close();
+} 
+
+void NeuralNet :: open_params (string filename) {
+    // get contents of file
+    int file_iter = -1;
+    int layer_iter = 0;
+    ifstream file;
+    file.open(filename);
+    string contents; 
+    while (getline(file, contents)) {
+        // if beginning of file
+        if (file_iter == -1) {
+            if (stoi(contents)+1 != this->layout_size) {
+                throw invalid_argument("file has different neural net architecture. Layout size is different.");
+            }
+            file_iter = 0;
+        }
+        // first input, stores starting node
+        else if (file_iter == 0) {
+            if (stoi(contents) != this->layers[layer_iter].starting_node) {
+                throw invalid_argument("file has different neural net architecture. Starting node is different.");
+            }
+            file_iter = 1;
+        }
+        // second input, stores ending_node
+        else if (file_iter == 1) {
+            if (stoi(contents) != this->layers[layer_iter].ending_node) {
+                throw invalid_argument("file has different neural net architecture. Ending node is different.");
+            }
+            file_iter = 2;
+        }
+        // third input, stores weights
+        else if (file_iter == 2) {
+            vector<double> weight_array;
+            split_string(contents, " ", weight_array);     
+            this->layers[layer_iter].weights = &weight_array[0];
+            file_iter = 3;
+        }
+        // fourth input, stores bias
+        else if (file_iter == 3) {
+            vector<double> bias_array;
+            split_string(contents, " ", bias_array); 
+            this->layers[layer_iter].bias = &bias_array[0];
+            file_iter = 0;
+            layer_iter += 1;
+        }
+    }
+    file.close();
+    
+}
+
 NeuralNet :: NeuralNet(vector<int> layout, double lr) {
     this->lr = lr;
     this->layout_size = int(layout.size());

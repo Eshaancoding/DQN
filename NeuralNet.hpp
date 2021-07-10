@@ -14,6 +14,8 @@
 #include <iostream> 
 #include <time.h>
 #include <math.h>
+#include <fstream>
+#include <cstring>
 using namespace std;
 
 #endif /* NeuralNet_hpp */
@@ -37,15 +39,15 @@ public:
 
 class NeuralNet {
 private:
-    Layer *layers;
-    int layout_size = 0;
-    int output_layout;
-    double lr;
     double mean (vector<double> array);
     vector<double> subtract (vector<double> arrayOne, vector<double> arrayTwo);
     vector<double> square (vector<double> arrayOne);
 	vector<double> multiply (vector<double> arrayOne, double two);
 public:
+    Layer *layers;
+    int layout_size = 0;
+    int output_layout;
+    double lr;
 	// class / vars initialization
     NeuralNet (vector<int> layout, double lr);
     
@@ -59,4 +61,8 @@ public:
 	
 	// If you can find the gradient of whatever function you have with respect to the output of the neural network, this function will figure out the derivative of the weights and bias and apply them  }
 	void apply_grad (vector<double> input, vector<double> grad); 
+
+    void save_params (string filename);
+    
+    void open_params (string filename);
 }; 

@@ -12,9 +12,9 @@ void gotoxy(int x,int y)
 // Parameters
 int BATCHES = 32; // number of training data trained per frame 
 double LR = 0.001; // 0.001 Learning rate for the neural networks
-int MEM_CAP = 10000; // 10 000 replay mem capacity
-int FRAME_REACH = 10000; // 10 000 frames till epsilon reaches 0.05. Epsilon declines linearly
-int TARGET_UPDATE = 5000; // 5000 frames for target net to update with net
+int MEM_CAP = 10000; // 1 000 000 replay mem capacity
+int FRAME_REACH = 10000; // 5 000 frames till epsilon reaches 0.05
+int TARGET_UPDATE = 5000; // 1000 frames for target net to update with net, and also saves neural network parameters every 5000 iter
 vector<int> layout ({8, 50, 3}); // Neural Network layout
 int gameWidth = 7;
 int gameHeight = 12; // if you want to alter width or height try to play around with the reward system
@@ -39,7 +39,6 @@ int main () {
         if (game.score > max_score) {
             max_score = game.score; 
         }
-        game.print_state();
         agent.store_mem(current_state, action, reward, next_state, game.is_done);
         agent.train();
         current_state = next_state; 
