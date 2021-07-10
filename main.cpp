@@ -2,7 +2,6 @@
 #include "Pong.cpp"
 #include <iostream>
 #include <stdio.h>
-#include <windows.h>
 using namespace std;
 
 void gotoxy(int x,int y)    
@@ -12,13 +11,13 @@ void gotoxy(int x,int y)
 
 // Parameters
 int BATCHES = 32; // number of training data trained per frame 
-double LR = 0.0005; // 0.001 Learning rate for the neural networks
-int MEM_CAP = 1000000; // 1 000 000 replay mem capacity
-int FRAME_REACH = 5000; // 5 000 frames till epsilon reaches 0.05
-int TARGET_UPDATE = 1000; // 1000 frames for target net to update with net
-vector<int> layout ({8, 150, 100, 3}); // Neural Network layout
-int gameWidth = 5;
-int gameHeight = 7; // if you want to alter width or height try to play around with the reward system
+double LR = 0.001; // 0.001 Learning rate for the neural networks
+int MEM_CAP = 10000; // 10 000 replay mem capacity
+int FRAME_REACH = 10000; // 10 000 frames till epsilon reaches 0.05. Epsilon declines linearly
+int TARGET_UPDATE = 5000; // 5000 frames for target net to update with net
+vector<int> layout ({8, 50, 3}); // Neural Network layout
+int gameWidth = 7;
+int gameHeight = 12; // if you want to alter width or height try to play around with the reward system
 // main
 int main () {
     Pong game = Pong(gameWidth, gameHeight); // PASS
