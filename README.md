@@ -1,7 +1,7 @@
 # DQN
 My implementation of DQN. 
 
-First go to the directory and type in c++ -std=c++11 main.cpp -o main && ./main && rm main. Then it should run.
+To test, simply run `make test` in this directory. To train, simply run `make train` in this directory. 
 Email: eshaanbarkataki@gmail.com
 
 Video: https://youtu.be/NDrtKeFO38U
