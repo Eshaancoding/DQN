@@ -22,7 +22,7 @@ int TARGET_UPDATE = 5000; // 1000 frames for target net to update with net, and 
 vector<int> layout ({8, 50, 3}); // Neural Network layout
 int gameWidth = 7;
 int gameHeight = 12; // if you want to alter width or height try to play around with the reward system
-int iteration = 0;
+int episodes = 0;
 // main
 int main () {
     Pong game = Pong(gameWidth, gameHeight); // PASS
@@ -35,8 +35,7 @@ int main () {
     ofs.open("reward.txt", std::ofstream::out | std::ofstream::trunc); // clear txt file
     ofs.close();
     system("clear");
-    while (iteration <= 100000) {
-        iteration += 1;
+    while (episodes < 10000) {
         int action = agent.action(current_state);
         int reward = game.act(action);
         vector<double> next_state = game.return_state();
@@ -44,16 +43,19 @@ int main () {
             avg_reward += reward; 
             reward_count += 1;
         }
-        if (iteration % 100 == 0 && avg_reward != 0) {
+        if (game.is_done) {
+            episodes += 1;
             // save reward to .txt
-            avg_reward /= reward_count;
-            ofstream myfile;
-            myfile.open ("reward.txt", ios::app);
-            myfile << avg_reward << endl;
-            myfile.close();
+            if (avg_reward != 0) {
+                avg_reward /= reward_count;
+                ofstream myfile;
+                myfile.open ("reward.txt", ios::app);
+                myfile << avg_reward << endl;
+                myfile.close();
+            }
             // show progress
             gotoxy(0,0);
-            cout << "Iteration: " << iteration << " | Max Score: " << max_score << " | Avg Reward: " << avg_reward << "               " << endl;
+            cout << "Episodes: " << episodes << " | Max Score: " << max_score << " | Avg Reward: " << avg_reward << "               " << endl;
             avg_reward = 0;
             reward_count = 0;
         }
