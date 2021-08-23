@@ -35,7 +35,7 @@ int main () {
     ofs.open("reward.txt", std::ofstream::out | std::ofstream::trunc); // clear txt file
     ofs.close();
     system("clear");
-    while (episodes < 10000) {
+    while (episodes < 20000) {
         int action = agent.action(current_state);
         int reward = game.act(action);
         vector<double> next_state = game.return_state();
