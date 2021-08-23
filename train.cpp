@@ -29,7 +29,7 @@ int main () {
     Agent agent = Agent(layout, LR, MEM_CAP, FRAME_REACH, TARGET_UPDATE, BATCHES); 
     vector<double> current_state = game.return_state(); 
     int max_score = 0;
-    int avg_reward = 0;
+    float avg_reward = 0;
     ofstream ofs;
     ofs.open("reward.txt", std::ofstream::out | std::ofstream::trunc); // clear txt file
     ofs.close();
