@@ -29,6 +29,7 @@ int main () {
     Agent agent = Agent(layout, LR, MEM_CAP, FRAME_REACH, TARGET_UPDATE, BATCHES); 
     vector<double> current_state = game.return_state(); 
     int max_score = 0;
+    int reward_count = 0;
     float avg_reward = 0;
     ofstream ofs;
     ofs.open("reward.txt", std::ofstream::out | std::ofstream::trunc); // clear txt file
@@ -39,18 +40,22 @@ int main () {
         int action = agent.action(current_state);
         int reward = game.act(action);
         vector<double> next_state = game.return_state();
-        avg_reward += reward; 
-        if (iteration % 100 == 0) {
+        if (reward != 0) {
+            avg_reward += reward; 
+            reward_count += 1;
+        }
+        if (iteration % 100 == 0 && avg_reward != 0) {
             // save reward to .txt
-            avg_reward /= 100;
+            avg_reward /= reward_count;
             ofstream myfile;
             myfile.open ("reward.txt", ios::app);
             myfile << avg_reward << endl;
             myfile.close();
             // show progress
             gotoxy(0,0);
-            cout << "Iteration: " << iteration << " | Max Score: " << max_score << " | Avg Reward: " << avg_reward << endl;
+            cout << "Iteration: " << iteration << " | Max Score: " << max_score << " | Avg Reward: " << avg_reward << "               " << endl;
             avg_reward = 0;
+            reward_count = 0;
         }
 
         // train
