@@ -2,7 +2,6 @@
 #include "Pong.cpp"
 #include <iostream>
 #include <stdio.h>
-#include <windows.h>
 using namespace std;
 
 void gotoxy(int x,int y)    
@@ -19,7 +18,7 @@ int main () {
     Agent agent = Agent(layout, "model.txt"); 
     vector<double> current_state = game.return_state(); 
     int max_score = 0;
-    system("cls"); // change to clear if your OS is Macosx or Linux
+    system("clear");
     while (true) {
         int action = agent.action(current_state);
         cout<<"Action: "<<action<<"         "<<endl;

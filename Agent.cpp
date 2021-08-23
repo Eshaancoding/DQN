@@ -2,7 +2,7 @@
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
-#include "NeuralNet.hpp"
+#include "NeuralNetwork/NeuralNet.hpp"
 using namespace std;
 class ReplayMemory {
 private: 

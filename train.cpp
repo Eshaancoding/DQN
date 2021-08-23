@@ -2,6 +2,10 @@
 #include "Pong.cpp"
 #include <iostream>
 #include <stdio.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <vector>
+#include <fstream>
 using namespace std;
 
 void gotoxy(int x,int y)    
@@ -18,24 +22,38 @@ int TARGET_UPDATE = 5000; // 1000 frames for target net to update with net, and 
 vector<int> layout ({8, 50, 3}); // Neural Network layout
 int gameWidth = 7;
 int gameHeight = 12; // if you want to alter width or height try to play around with the reward system
+int iteration = 0;
 // main
 int main () {
     Pong game = Pong(gameWidth, gameHeight); // PASS
     Agent agent = Agent(layout, LR, MEM_CAP, FRAME_REACH, TARGET_UPDATE, BATCHES); 
     vector<double> current_state = game.return_state(); 
     int max_score = 0;
-    system("cls"); // change to clear if your OS is Macosx or Linux
-    while (true) {
+    int avg_reward = 0;
+    ofstream ofs;
+    ofs.open("reward.txt", std::ofstream::out | std::ofstream::trunc); // clear txt file
+    ofs.close();
+    system("clear");
+    while (iteration <= 100000) {
+        iteration += 1;
         int action = agent.action(current_state);
         int reward = game.act(action);
         vector<double> next_state = game.return_state();
-        // print
-        gotoxy(0,0);
-        cout<<"Max score: "<<max_score<<"         "<<endl;
-        cout<<"Score: "<<game.score<<"         "<<endl;
-        cout<<"Reward: "<<reward<<"         "<<endl;
-        cout<<"Episodes: "<<game.episodes<<"         "<<endl;
-        cout<<"Frames: "<<agent.frames<<"         "<<endl;
+        avg_reward += reward; 
+        if (iteration % 100 == 0) {
+            // save reward to .txt
+            avg_reward /= 100;
+            ofstream myfile;
+            myfile.open ("reward.txt", ios::app);
+            myfile << avg_reward << endl;
+            myfile.close();
+            // show progress
+            gotoxy(0,0);
+            cout << "Iteration: " << iteration << " | Max Score: " << max_score << " | Avg Reward: " << avg_reward << endl;
+            avg_reward = 0;
+        }
+
+        // train
         if (game.score > max_score) {
             max_score = game.score; 
         }
